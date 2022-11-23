@@ -209,10 +209,11 @@ $(uboot_wrkdir)/.config: $(uboot_defconfig)
 	mkdir -p $(dir $@)
 	cp -p $< $@
 
-$(vmlinux): $(linux_srcdir) $(linux_wrkdir)/.config $(target_gcc) $(buildroot_initramfs_sysroot)
+$(vmlinux): $(linux_srcdir) $(linux_wrkdir)/.config $(target_gcc) $(buildroot_initramfs_sysroot) $(initramfs)
 	$(MAKE) -C $< O=$(linux_wrkdir) \
 		ARCH=riscv \
 		CROSS_COMPILE=$(CROSS_COMPILE) \
+		CONFIG_INITRAMFS_SOURCE=$(initramfs) \
 		PATH=$(RVPATH) \
 		vmlinux		\
 		all \
@@ -277,7 +278,7 @@ initramfs_cpio := $(wrkdir)/initramfs.cpio
 $(initramfs).d: $(buildroot_initramfs_sysroot) $(buildroot_initramfs_tar)
 	touch $@
 
-$(initramfs): $(buildroot_initramfs_sysroot) $(vmlinux) $(buildroot_initramfs_tar)
+$(initramfs): $(buildroot_initramfs_sysroot) $(linux_wrkdir)/.config $(buildroot_initramfs_tar)
 	cp -r $(module_install_path)/lib/modules $(buildroot_initramfs_sysroot)/lib/
 	cd $(linux_wrkdir) && \
 		$(linux_srcdir)/usr/gen_initramfs.sh \

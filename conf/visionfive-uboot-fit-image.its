@@ -16,19 +16,6 @@
                         compression = "none";
                 };
 
-                ramdisk {
-                        description = "buildroot initramfs";
-                        data = /incbin/("../work/initramfs.cpio.gz");
-                        type = "ramdisk";
-                        arch = "riscv";
-                        os = "linux";
-                        load = <0x0 0x86100000>;
-                        compression = "none";
-                        hash-1 {
-                                algo = "sha256";
-                        };
-                };
-
                 fdt {
                         data = /incbin/("../work/linux/arch/riscv/boot/dts/starfive/jh7100-starfive-visionfive-v1.dtb");
                         type = "flat_dt";
@@ -46,9 +33,8 @@
 
                 config-1 {
                         description = "visionfive Nvdla with opensbi";
-			kernel = "vmlinux";
+			            kernel = "vmlinux";
                         fdt = "fdt";
-                        loadables = "ramdisk";
                 };
         };
 };
