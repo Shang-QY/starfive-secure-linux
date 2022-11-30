@@ -9,7 +9,9 @@ fitfile=hifiveu.fit
 # The rest of this is mostly of interest to u-boot developers
 # below much match what's in FIT (ugha)
 bbladdr=80200000
-fdtaddr=86000000
+fdtaddr=186000000
+
+fdt_high=0xffffffffffffffff
 
 # this assumes ${fileaddr} is already set!!
 boot2=fatload mmc 0:1 ${fileaddr} ${fitfile}; bootm start ${fileaddr}; bootm loados ${fileaddr}; echo "Booting kernel in"; booti ${bbladdr} - ${fdtaddr}
