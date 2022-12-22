@@ -5,7 +5,7 @@
 
 # for debugging boot
 #bootargs=video=640x480 console=ttySI0 root=/dev/mmcblk0p2 rootwait
-bootargs=earlyprintk console=ttyS0,115200 debug rootwait stmmaceth=chain_mode:1 root=/dev/mmcblk0p3 
+bootargs=earlyprintk console=ttyS0,115200 debug rootwait stmmaceth=chain_mode:1
 
 
 # The FIT file to boot from
