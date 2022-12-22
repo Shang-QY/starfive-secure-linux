@@ -14,4 +14,5 @@ fdtaddr=186000000
 fdt_high=0xffffffffffffffff
 
 # this assumes ${fileaddr} is already set!!
-boot2=fatload mmc 0:1 ${fileaddr} ${fitfile}; bootm start ${fileaddr}; bootm loados ${fileaddr}; echo "Booting kernel in"; booti ${bbladdr} - ${fdtaddr}
+# boot2=fatload mmc 0:1 ${fileaddr} ${fitfile}; bootm start ${fileaddr}; bootm loados ${fileaddr}; echo "Booting kernel in"; booti ${bbladdr} - ${fdtaddr}
+boot2=setenv serverip 192.168.29.47; setenv ipaddr 192.168.21.18; tftpboot 0x180200000 Image; tftpboot 0x186000000 dtb.dtb; booti 0x180200000

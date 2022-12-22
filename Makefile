@@ -32,6 +32,8 @@ linux_wrkdir := $(wrkdir)/linux
 linux_defconfig := $(confdir)/visionfive_defconfig
 
 vmlinux := $(linux_wrkdir)/vmlinux
+vmlinux_without_ramfs := $(linux_wrkdir)/vmlinux_without_ramfs
+vmlinux_dtb := $(linux_wrkdir)/arch/riscv/boot/dts/starfive/jh7100-starfive-visionfive-v1.dtb
 vmlinux_stripped := $(linux_wrkdir)/vmlinux-stripped
 vmlinux_bin := $(wrkdir)/vmlinux.bin
 module_install_path:=$(wrkdir)/module_install_path
@@ -225,6 +227,22 @@ $(vmlinux): $(linux_srcdir) $(linux_wrkdir)/.config $(target_gcc) $(buildroot_in
 		INSTALL_MOD_PATH=$(module_install_path) \
 		modules_install
 
+$(vmlinux_dtb): $(linux_srcdir) $(linux_wrkdir)/.config $(target_gcc)
+	$(MAKE) -C $< O=$(linux_wrkdir) \
+		ARCH=riscv \
+		CROSS_COMPILE=$(CROSS_COMPILE) \
+		PATH=$(RVPATH) \
+		dtbs
+
+$(vmlinux_without_ramfs): $(linux_srcdir) $(linux_wrkdir)/.config $(target_gcc) $(buildroot_initramfs_sysroot) $(initramfs)
+	$(MAKE) -C $< O=$(linux_wrkdir) \
+		ARCH=riscv \
+		CROSS_COMPILE=$(CROSS_COMPILE) \
+		PATH=$(RVPATH) \
+		vmlinux		\
+		all \
+		modules
+
 # vpu building depend on the $(vmlinux), $(vmlinux) depend on $(buildroot_initramfs_sysroot)
 # so vpubuild should be built seperately
 vpubuild: $(vmlinux) wave511-build wave521-build codaj12-build omxil-build gstomx-build vpudriver-build
@@ -362,10 +380,12 @@ $(rootfs): $(buildroot_rootfs_ext)
 
 $(buildroot_initramfs_sysroot): $(buildroot_initramfs_sysroot_stamp)
 
-.PHONY: buildroot_initramfs_sysroot vmlinux bbl fit
+.PHONY: buildroot_initramfs_sysroot vmlinux bbl fit vmlinux_dtb vmlinux_without_ramfs
 buildroot_initramfs_sysroot: $(buildroot_initramfs_sysroot)
 vmlinux: $(vmlinux)
 fit: $(fit)
+vmlinux_dtb: $(vmlinux_dtb)
+vmlinux_without_ramfs: $(vmlinux_without_ramfs)
 
 .PHONY: clean
 clean:
