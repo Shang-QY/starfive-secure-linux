@@ -8,8 +8,8 @@
 	branch = JH7100_VisionFive_devel
 [submodule "linux"]
 	path = linux
-	url = git@github.com:starfive-tech/linux.git
-	branch = visionfive-5.15.y-devel
+	url = git@github.com:Shang-QY/sec-linux.git
+	branch = main
 [submodule "opensbi"]
 	path = opensbi
 	url = git@github.com:starfive-tech/opensbi.git
