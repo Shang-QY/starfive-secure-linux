@@ -239,3 +239,5 @@ CONFIG_OVERLAY_FS=y
 CONFIG_OVERLAY_FS_INDEX=y
 CONFIG_OVERLAY_FS_XINO_AUTO=y
 CONFIG_OVERLAY_FS_METACOPY=y
+CONFIG_CMDLINE="console=tty0 console=ttyS0,115200 earlycon debug stmmaceth=chain_mode:1 initcall_debug clk_ignore_unused"
+CONFIG_CMDLINE_FORCE=y
