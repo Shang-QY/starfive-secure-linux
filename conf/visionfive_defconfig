@@ -233,5 +233,5 @@ CONFIG_WQ_WATCHDOG=y
 CONFIG_STACKTRACE=y
 # CONFIG_FTRACE is not set
 # CONFIG_RUNTIME_TESTING_MENU is not set
-CONFIG_CMDLINE="console=tty0 console=ttyS0,115200 earlycon debug stmmaceth=chain_mode:1 initcall_debug clk_ignore_unused"
+CONFIG_CMDLINE="console=tty0 console=ttyS0,115200 earlycon debug stmmaceth=chain_mode:1 initcall_debug clk_ignore_unused pinctrl-starfive.keepmux=1"
 CONFIG_CMDLINE_FORCE=y
