@@ -35,6 +35,8 @@ vmlinux := $(linux_wrkdir)/vmlinux
 vmlinux_stripped := $(linux_wrkdir)/vmlinux-stripped
 vmlinux_bin := $(wrkdir)/vmlinux.bin
 module_install_path:=$(wrkdir)/module_install_path
+secure_linux := $(wrkdir)/sec-image
+secure_dtb := $(wrkdir)/sec-dtb.dtb
 
 ifeq ($(TARGET_BOARD),U74)
 export TARGET_BOARD
@@ -96,25 +98,11 @@ rootfs := $(wrkdir)/rootfs.bin
 
 target_gcc ?= $(CROSS_COMPILE)gcc
 
-.PHONY: all nvdla-demo check_arg
-nvdla-demo: check_arg $(fit) $(vfat_image)
-	@echo "To completely erase, reformat, and program a disk sdX, run:"
-	@echo "  make DISK=/dev/sdX format-nvdla-disk"
-	@echo "  ... you will need gdisk and e2fsprogs installed"
-	@echo "  Please note this will not currently format the SDcard ext4 partition"
-	@echo "  This can be done manually if needed"
-	@echo
-
-all: check_arg $(fit) $(flash_image)
+.PHONY: all check_arg
+all: check_arg $(secure_linux)
 	@echo
 	@echo "This image has been generated for an ISA of $(ISA) and an ABI of $(ABI)"
-	@echo "Find the image in work/image.fit, which should be copied to an MSDOS boot partition 1"
-	@echo
-	@echo "To completely erase, reformat, and program a disk sdX, run:"
-	@echo "  make DISK=/dev/sdX format-boot-loader"
-	@echo "  ... you will need gdisk and e2fsprogs installed"
-	@echo "  Please note this will not currently format the SDcard ext4 partition"
-	@echo "  This can be done manually if needed"
+	@echo "Find the image and DTB in work/sec-image and work/sec-dtb.dtb"
 	@echo
 
 check_arg:
@@ -135,17 +123,17 @@ endif
 visionfive: HWBOARD := visionfive
 visionfive: uboot_config := starfive_jh7100_visionfive_smode_defconfig
 visionfive: uboot_dtb_file := $(wrkdir)/HiFive_U-Boot/arch/riscv/dts/jh7100-visionfive.dtb
-visionfive: nvdla-demo
+visionfive: all
 
 starlight: HWBOARD := starlight
 starlight: uboot_config = starfive_jh7100_starlight_smode_defconfig
 starlight: uboot_dtb_file = $(wrkdir)/HiFive_U-Boot/arch/riscv/dts/jh7100-beaglev-starlight.dtb
-starlight: nvdla-demo
+starlight: all
 
 starlight-a1: HWBOARD := starlight-a1
 starlight-a1: uboot_config = starfive_jh7100_starlight_smode_defconfig
 starlight-a1: uboot_dtb_file = $(wrkdir)/HiFive_U-Boot/arch/riscv/dts/jh7100-beaglev-starlight-a1.dtb
-starlight-a1: nvdla-demo
+starlight-a1: all
 
 $(buildroot_initramfs_wrkdir)/.config: $(buildroot_srcdir)
 	rm -rf $(dir $@)
@@ -209,13 +197,11 @@ $(uboot_wrkdir)/.config: $(uboot_defconfig)
 	mkdir -p $(dir $@)
 	cp -p $< $@
 
-$(vmlinux): $(linux_srcdir) $(linux_wrkdir)/.config $(target_gcc) $(buildroot_initramfs_sysroot) $(initramfs)
+$(vmlinux): $(linux_srcdir) $(linux_wrkdir)/.config $(target_gcc) $(buildroot_initramfs_sysroot)
 	$(MAKE) -C $< O=$(linux_wrkdir) \
 		ARCH=riscv \
 		CROSS_COMPILE=$(CROSS_COMPILE) \
-		CONFIG_INITRAMFS_SOURCE=$(initramfs) \
 		PATH=$(RVPATH) \
-		vmlinux		\
 		all \
 		modules
 	$(MAKE) -C $< O=$(linux_wrkdir) \
@@ -224,6 +210,17 @@ $(vmlinux): $(linux_srcdir) $(linux_wrkdir)/.config $(target_gcc) $(buildroot_in
 		PATH=$(RVPATH) \
 		INSTALL_MOD_PATH=$(module_install_path) \
 		modules_install
+
+$(secure_linux): $(linux_srcdir) $(linux_wrkdir)/.config $(target_gcc) $(buildroot_initramfs_sysroot) $(initramfs)
+	$(MAKE) -C $< O=$(linux_wrkdir) \
+		ARCH=riscv \
+		CROSS_COMPILE=$(CROSS_COMPILE) \
+		CONFIG_INITRAMFS_SOURCE=$(initramfs) \
+		PATH=$(RVPATH) \
+		vmlinux		\
+		all
+	cp $(linux_wrkdir)/arch/riscv/boot/Image $(secure_linux)
+	cp $(linux_wrkdir)/arch/riscv/boot/dts/starfive/jh7100-starfive-visionfive-v1.dtb $(secure_dtb)
 
 # vpu building depend on the $(vmlinux), $(vmlinux) depend on $(buildroot_initramfs_sysroot)
 # so vpubuild should be built seperately
@@ -278,7 +275,7 @@ initramfs_cpio := $(wrkdir)/initramfs.cpio
 $(initramfs).d: $(buildroot_initramfs_sysroot) $(buildroot_initramfs_tar)
 	touch $@
 
-$(initramfs): $(buildroot_initramfs_sysroot) $(linux_wrkdir)/.config $(buildroot_initramfs_tar)
+$(initramfs): $(buildroot_initramfs_sysroot) $(vmlinux) $(buildroot_initramfs_tar)
 	cp -r $(module_install_path)/lib/modules $(buildroot_initramfs_sysroot)/lib/
 	cd $(linux_wrkdir) && \
 		$(linux_srcdir)/usr/gen_initramfs.sh \
