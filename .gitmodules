@@ -2,16 +2,7 @@
 	path = buildroot
 	url = git@github.com:starfive-tech/sft-riscv-buildroot.git
 	branch = JH7100_VisionFive_devel
-[submodule "HiFive_U-Boot"]
-	path = HiFive_U-Boot
-	url = git@github.com:starfive-tech/u-boot.git
-	branch = JH7100_VisionFive_devel
 [submodule "linux"]
 	path = linux
 	url = git@github.com:starfive-tech/linux.git
 	branch = visionfive-5.15.y-devel
-[submodule "opensbi"]
-	path = opensbi
-	url = git@github.com:starfive-tech/opensbi.git
-	branch = master
-
