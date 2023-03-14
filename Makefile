@@ -243,6 +243,7 @@ ifeq ($(buildroot_rootfs_ext),$(wildcard $(buildroot_rootfs_ext)))
 endif
 ifeq ($(buildroot_initramfs_tar),$(wildcard $(buildroot_initramfs_tar)))
 	rm work/buildroot_initramfs/images/rootfs.tar
+	rm -rf work/buildroot_initramfs/target/root/penglai_rootfs
 endif
 
 .PHONY: distclean
