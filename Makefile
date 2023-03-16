@@ -249,3 +249,5 @@ endif
 .PHONY: distclean
 distclean:
 	rm -rf -- $(wrkdir) $(toolchain_dest)
+
+-include $(initramfs).d
