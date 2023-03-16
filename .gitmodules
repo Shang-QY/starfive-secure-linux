@@ -1,8 +1,8 @@
 [submodule "buildroot"]
 	path = buildroot
-	url = git@github.com:starfive-tech/sft-riscv-buildroot.git
-	branch = JH7100_VisionFive_devel
+	url = git@github.com:Shang-QY/sec-buildroot.git
+	branch = customized_rootfs
 [submodule "linux"]
 	path = linux
-	url = git@github.com:starfive-tech/linux.git
+	url = git@github.com:Shang-QY/sec-linux.git
 	branch = visionfive-5.15.y-devel
